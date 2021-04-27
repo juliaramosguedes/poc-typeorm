@@ -1,11 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  JoinColumn,
-  ManyToOne,
-  PrimaryGeneratedColumn
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import { User } from '../../users/entities/User';
@@ -23,7 +16,7 @@ export class Statement {
   @Column('uuid')
   user_id: string;
 
-  @ManyToOne(() => User, user => user.statement)
+  @ManyToOne(() => User, user => user.statement, { onDelete: 'CASCADE', orphanedRowAction: 'delete' })
   @JoinColumn({ name: 'user_id' })
   user: User;
 

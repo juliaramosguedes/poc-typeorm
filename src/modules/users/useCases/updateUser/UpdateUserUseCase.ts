@@ -13,7 +13,7 @@ export class UpdateUserUseCase {
     private usersRepository: IUsersRepository,
   ) {}
 
-  async execute({ user_id, name, email, password, statements }: IUpdateUserDTO) {
+  async execute({ user_id, name, email, password, statement }: IUpdateUserDTO) {
     const userAlreadyExists = await this.usersRepository.findById(user_id);
 
     if (!userAlreadyExists) {
@@ -27,7 +27,7 @@ export class UpdateUserUseCase {
       email,
       name,
       password: passwordHash,
-      statements
+      statement
     });
   }
 }

@@ -6,7 +6,7 @@ import { UpdateUserUseCase } from './UpdateUserUseCase';
 export class UpdateUserController {
   async execute(request: Request, response: Response) {
     const { id: user_id } = request.user;
-    const { name, email, password, statement: statements } = request.body;
+    const { name, email, password, statement } = request.body;
 
     const updateUser = container.resolve(UpdateUserUseCase);
 
@@ -15,7 +15,7 @@ export class UpdateUserController {
       name,
       email,
       password,
-      statements
+      statement
     });
 
     return response.status(201).send();

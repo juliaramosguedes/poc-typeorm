@@ -5,5 +5,5 @@ export interface IUpdateUserDTO {
   name: string;
   email: string;
   password: string;
-  statements: Statement[];
+  statement: Statement[];
 }

@@ -28,7 +28,16 @@ export class UsersRepository implements IUsersRepository {
     return this.repository.save(user);
   }
 
-  async update({ user_id, name, email, password, statements }: IUpdateUserDTO): Promise<UpdateResult> {
-    return this.repository.update(user_id, { name, email, password, statements });
+  async update({ user_id, name, email, password, statement }: IUpdateUserDTO): Promise<User> {
+    const user = await this.repository.findOne(user_id, { relations: ["statement"] });
+
+    if (user) {
+      user.statement = statement.map((data) => ({ ...user.statement, ...data, user }));
+      user.name = name;
+      user.email = email;
+      user.password = password;
+
+      return await this.repository.save(user);
+    }
   }
 }

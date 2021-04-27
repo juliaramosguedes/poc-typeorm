@@ -1,10 +1,4 @@
-import {
-  Column,
-  CreateDateColumn,
-  Entity,
-  OneToMany,
-  PrimaryGeneratedColumn
-} from 'typeorm';
+import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
 
 import { Statement } from '../../statements/entities/Statement';
@@ -23,8 +17,8 @@ export class User {
   @Column()
   password: string;
 
-  @OneToMany(() => Statement, statement => statement.user)
-  statement: Account[];
+  @OneToMany(() => Statement, statement => statement.user, { cascade: true })
+  statement: Statement[];
 
   @CreateDateColumn()
   created_at: Date;
@@ -33,7 +27,7 @@ export class User {
   updated_at: Date;
 
   constructor() {
-    if(!this.id) {
+    if (!this.id) {
       this.id = uuid();
     }
   }
