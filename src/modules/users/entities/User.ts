@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { v4 as uuid } from 'uuid';
-
 import { Statement } from '../../statements/entities/Statement';
 
 @Entity('users')
@@ -26,9 +25,8 @@ export class User {
   @CreateDateColumn()
   updated_at: Date;
 
-  constructor() {
-    if (!this.id) {
-      this.id = uuid();
-    }
+  constructor(user: Partial<User>) {
+    Object.assign(this, user);
+    if (!this.id) this.id = uuid();
   }
 }

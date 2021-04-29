@@ -1,4 +1,4 @@
-import { getRepository, Repository } from "typeorm";
+import { getRepository, Repository, Transaction, TransactionManager, EntityManager } from "typeorm";
 
 import { Statement } from "../entities/Statement";
 import { ICreateStatementDTO } from "../useCases/createStatement/ICreateStatementDTO";
@@ -11,6 +11,11 @@ export class StatementsRepository implements IStatementsRepository {
 
   constructor() {
     this.repository = getRepository(Statement);
+  }
+
+  @Transaction()
+  save(@TransactionManager() manager: EntityManager, user: Statement) {
+    return manager.save(user);
   }
 
   async create({

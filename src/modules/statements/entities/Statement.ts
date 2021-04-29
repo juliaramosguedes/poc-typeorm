@@ -35,9 +35,8 @@ export class Statement {
   @CreateDateColumn()
   updated_at: Date;
 
-  constructor() {
-    if (!this.id) {
-      this.id = uuid();
-    }
+  constructor(statement: Partial<Statement>) {
+    Object.assign(this, statement);
+    if (!this.id) this.id = uuid();
   }
 }

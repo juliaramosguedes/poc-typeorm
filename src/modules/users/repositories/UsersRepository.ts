@@ -1,15 +1,21 @@
-import { getRepository, Repository, UpdateResult } from 'typeorm';
+import { getManager, getRepository, Repository, Transaction, TransactionRepository } from 'typeorm';
 
 import { User } from '../entities/User';
 import { ICreateUserDTO } from '../useCases/createUser/ICreateUserDTO';
 import { IUsersRepository } from './IUsersRepository';
 import { IUpdateUserDTO } from '../useCases/updateUser/IUpdateUserDTO';
+import { ICreateManyUsersDTO } from '../useCases/createManyUsers/ICreateManyUsersDTO';
 
 export class UsersRepository implements IUsersRepository {
   private repository: Repository<User>;
 
   constructor() {
     this.repository = getRepository(User);
+  }
+
+  @Transaction()
+  save(user: User, @TransactionRepository(User) userRepository: Repository<User>) {
+    return userRepository.save(user);
   }
 
   async findByEmail(email: string): Promise<User | undefined> {
@@ -29,7 +35,7 @@ export class UsersRepository implements IUsersRepository {
   }
 
   async update({ user_id, name, email, password, statement }: IUpdateUserDTO): Promise<User> {
-    const user = await this.repository.findOne(user_id, { relations: ["statement"] });
+    const user = await this.repository.findOne(user_id, { relations: ['statement'] });
 
     if (user) {
       user.statement = statement.map((data) => ({ ...user.statement, ...data, user }));
@@ -37,7 +43,23 @@ export class UsersRepository implements IUsersRepository {
       user.email = email;
       user.password = password;
 
-      return await this.repository.save(user);
+      await getManager().transaction(async transactionalEntityManager => {
+        await transactionalEntityManager.save(user);
+      });
+
+      return user;
     }
+  }
+
+  async createMany(users: ICreateManyUsersDTO[]): Promise<User[]> {
+    const newUsers = users.map(({ name, email, password }) => this.repository.create({ name, email, password }));
+
+    await getManager().transaction(async transactionalEntityManager => {
+      newUsers.map(async (user) => {
+        await transactionalEntityManager.save(user);
+      });
+    });
+
+    return newUsers;
   }
 }
